@@ -1,0 +1,65 @@
+
+-- Inserir Papel:
+INSERT INTO brh.papel (id, nome) VALUES (8, 'Especialista de Negócios');
+
+-- Inserir Projeto:
+INSERT INTO brh.projeto (id, nome, responsavel, inicio, fim) VALUES (5, 'BI', 'T123', to_date('2024-02-01', 'yyyy-mm-dd'), null);
+
+-- Inserir dados Colaborador
+
+INSERT INTO brh.colaborador (matricula, nome, cpf, salario, departamento, cep, logradouro, complemento_endereco) VALUES ('A124', 'Fulano de Tal', '103.845.160-00', '5000', 'DIR', '71444-400', 'Avenida Principal', 'Chácara 19');
+
+-- Carga de telefones celulares (M - MÓVEL) dos colaboradores
+INSERT INTO brh.telefone_colaborador (colaborador, numero, tipo) VALUES ('A124', '(61) 99999-9999', 'M');
+
+-- Carga de telefones residenciais (R - RESIDENCIAL) dos colaboradores
+INSERT INTO brh.telefone_colaborador (colaborador, numero, tipo) VALUES ('A124', '(61) 3030-4040', 'R');
+
+-- Carga dos emails pessoais dos colaboradores
+INSERT INTO brh.email_colaborador (colaborador, email, tipo) VALUES ('A124', 'fulano@email.com', 'P');
+
+-- Carga dos emails corporativos dos colaboradores
+INSERT INTO brh.email_colaborador (colaborador, email, tipo) VALUES ('A123', 'fulano.tal@brh.com', 'T');
+
+-- Carga dos dependentes de cada um dos colaboradores
+INSERT INTO brh.dependente (cpf, colaborador, nome, parentesco, data_nascimento) VALUES ('243.361.552-00', 'A124', 'Filha Beltrana de Tal', 'Filho(a)', to_date('2014-04-25', 'yyyy-mm-dd'));
+INSERT INTO brh.dependente (cpf, colaborador, nome, parentesco, data_nascimento) VALUES ('243.361.552-01', 'A124', 'Filho Beltrana de Tal', 'Filho(a)', to_date('2002-09-25', 'yyyy-mm-dd'));
+
+-- Relatório de Cônjuge - Consultar nome do colaborador, nome do dependente, data de nascimento do dependente.
+SELECT c.nome AS COLABORADOR, d.nome AS DEPENTENDE, d.data_nascimento, d.parentesco
+FROM brh.colaborador C
+INNER JOIN brh.dependente D
+ON c.matricula = d.colaborador
+WHERE d.parentesco = 'Cônjuge';
+
+-- Relatório de Dependentes - Consultar dependentes Nascimento abril, maio e junho, ou tenha a letra 'h' no nome.
+SELECT * FROM brh.dependente
+WHERE TO_CHAR (DATA_NASCIMENTO, 'mm') in ( '04', '05', '06')
+OR NOME LIKE '%H%'
+ORDER BY NOME;
+
+-- Consultar nome colaborador com o maior salário
+SELECT NOME, SALARIO
+FROM brh.colaborador
+WHERE SALARIO = (SELEC MAX(SALARIO) FROM rh.colaborador;
+
+-- Consultar senioridade
+SELECT C.MATRICULA,
+       C.NOME,
+       C.SALARIO,
+       
+       CASE
+       WHEN c.salario <= 3000 THEN 'Junior'
+       WHEN c.salario <= 6000 THEN 'Pleno'
+       WHEN c.salario <= 20000 THEN 'Senior'
+       ELSE 'Corpo Diretor'
+       END SENIORIDADE
+       FROM brh.colaborador C
+       ORDER BY SENIORIDADE, NOME;
+       
+-- Consultar nome, telefone e e-mails dos colaboradores
+SELECT C.NOME, TC.NUMERO, EC.EMAIL
+FROM brh.colaborador C
+INNER JOIN brh.telefone_colaborador TC ON C.MATRICULA = TC.COLABORADOR AND TC.TIPO IN ('M', 'C')
+INNER JOIN brh.email_colaborador EC ON C.MATRICULA = EC.COLABORADOR AND EC.TIPO IN 'T'
+ORDER BY NOME;
